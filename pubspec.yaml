@@ -1,5 +1,5 @@
 name: jsonata_flutter
-description: "A new Flutter package project."
+description: A Flutter package that enables the use of JSONata expressions in mobile applications. It provides a bridge to evaluate JSONata queries on JSON data within Flutter apps.
 version: 0.0.1
 homepage:
 
