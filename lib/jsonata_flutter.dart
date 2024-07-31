@@ -1,7 +1,7 @@
 library jsonata_flutter;
 
-import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:jsonata_flutter/jsonata.min.dart';
 
 /// A class to execute JSONata expressions on JSON data in Flutter.
 class JsonAta {
@@ -21,7 +21,7 @@ class JsonAta {
     if (_isLibraryLoaded) return;
 
     try {
-      String jsonata = await rootBundle.loadString('assets/jsonata.min.js');
+      String jsonata = jsonAtaMinJS;
       _flutterJs.evaluate(jsonata);
       _isLibraryLoaded = true;
     } catch (e) {
