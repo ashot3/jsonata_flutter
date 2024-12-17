@@ -1,11 +1,12 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
 
 android {
-    namespace = "com.example.example"
+    namespace = "com.example.jsonata_flutter_example"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -19,12 +20,14 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.example"
-        minSdk = 21
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "com.example.jsonata_flutter_example"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        
     }
 
     buildTypes {
@@ -41,6 +44,5 @@ flutter {
 }
 
 dependencies {
-    implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.3.5"
     implementation 'com.google.android.play:core:1.10.3'
 }

@@ -1,4 +1,4 @@
-package com.example.example
+package com.example.jsonata_flutter_example
 
 import io.flutter.embedding.android.FlutterActivity
 

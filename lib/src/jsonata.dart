@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_js/flutter_js.dart';
+import 'package:flutter_js_stable/flutter_js_stable.dart';
 import 'jsonata_core.dart';
 import 'jsonata_result.dart';
 

@@ -1,4 +1,4 @@
-# example
+# jsonata_flutter_example
 
 A new Flutter project.
 
