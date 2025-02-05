@@ -1,10 +1,10 @@
-import 'dart:convert';
+import 'dart:async';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:js' as js;
-import 'dart:js_util' as js_util;
 
 // Import your JSONata code, error, and result classes
-import 'jsonata_core.dart';    
-import 'jsonata_result.dart'; 
+import 'jsonata_core.dart';
+import 'jsonata_result.dart';
 
 class Jsonata {
   bool _isReady = false;
@@ -81,38 +81,48 @@ class Jsonata {
 
       // This JS snippet is an async IIFE that returns a promise
       final code = '''
-        (async function() {
-          try {
-            var data = $sourceData;
-            var expr = jsonata('$cleanExpression');
-            var result = await expr.evaluate(data);
-            return result === undefined ? null : result;
-          } catch (err) {
-            // Re-throw a structured object so we can capture details in Dart
-            throw {
-              message: err.message,
-              code: err.code,
-              position: err.position,
-              token: err.token
-            };
-          }
-        })()
-      ''';
+                (function() {
+                  return new Promise(async (resolve, reject) => {
+                    try {
+                      var data = $sourceData;
+                      var expr = jsonata('$cleanExpression');
+                      var result = await expr.evaluate(data);
+                      resolve(result === undefined ? null : result);
+                    } catch (err) {
+                      reject({
+                        message: err.message,
+                        code: err.code,
+                        position: err.position,
+                        token: err.token
+                      });
+                    }
+                  });
+                })()
+              ''';
 
-      // Evaluate the string to get a JS Promise
+      // Create a Completer to handle the async result
+      final Completer<JsonataResult> completer = Completer<JsonataResult>();
+
+      // Evaluate the JavaScript code
       final promise = js.context.callMethod('eval', [code]);
 
-      // Convert Promise -> Dart Future
-      final jsValue = await js_util.promiseToFuture<dynamic>(promise);
+      if (promise != null && promise is js.JsObject) {
+        promise.callMethod('then', [
+          (result) {
+            completer.complete(JsonataResult.success(result));
+          },
+          (error) {
+            completer.complete(JsonataResult.error(JsonataError(error.toString())));
+          }
+        ]);
+      } else {
+        completer.complete(JsonataResult.error(JsonataError('Invalid JavaScript execution result')));
+      }
 
-      // Convert the returned JS object to JSON then decode it
-      // to get a Dart Map/dynamic structure
-      final parsedResult = jsonDecode(jsonEncode(jsValue));
-
-      return JsonataResult.success(parsedResult);
+      return completer.future;
     } catch (e) {
       // If the JS threw an error, or anything else went wrong
-      return JsonataResult.error(e);
+      return Future.value(JsonataResult.error(JsonataError(e.toString())));
     }
   }
 
